@@ -1,21 +1,23 @@
-package dk.itu.creativestudio
+package dk.itu.creativestudio.ui.features.edit
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dk.itu.creativestudio.data.model.Inspiration
 
 @Composable
-fun AddInspirationScreen(
+fun EditInspirations(
+    inspiration: Inspiration,
     onSave: (String, String, String, String) -> Unit,
     onCancel: () -> Unit
 ) {
 
-    var title by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
-    var imageUrl by remember { mutableStateOf("") }
-    var videoUrl by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf(inspiration.title) }
+    var notes by remember { mutableStateOf(inspiration.notes) }
+    var imageUrl by remember { mutableStateOf(inspiration.imageUrl) }
+    var videoUrl by remember { mutableStateOf(inspiration.videoUrl) }
 
     Column(
         modifier = Modifier
@@ -26,7 +28,8 @@ fun AddInspirationScreen(
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text("Title") }
+            label = { Text("Title") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -55,26 +58,16 @@ fun AddInspirationScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        Button(onClick = {
+            onSave(title, notes, imageUrl, videoUrl)
+        }) {
+            Text("Save Changes")
+        }
 
-            Button(
-                onClick = onCancel,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Cancel")
-            }
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                onClick = {
-                    onSave(title, notes, imageUrl, videoUrl)
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Save")
-            }
+        Button(onClick = onCancel) {
+            Text("Cancel")
         }
     }
 }

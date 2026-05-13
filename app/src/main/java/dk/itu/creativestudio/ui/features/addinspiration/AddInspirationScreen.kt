@@ -1,4 +1,4 @@
-package dk.itu.creativestudio
+package dk.itu.creativestudio.ui.features.addinspiration
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -7,16 +7,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EditInspirations(
-    inspiration: Inspiration,
+fun AddInspirationScreen(
     onSave: (String, String, String, String) -> Unit,
     onCancel: () -> Unit
 ) {
 
-    var title by remember { mutableStateOf(inspiration.title) }
-    var notes by remember { mutableStateOf(inspiration.notes) }
-    var imageUrl by remember { mutableStateOf(inspiration.imageUrl) }
-    var videoUrl by remember { mutableStateOf(inspiration.videoUrl) }
+    var title by remember { mutableStateOf("") }
+    var notes by remember { mutableStateOf("") }
+    var imageUrl by remember { mutableStateOf("") }
+    var videoUrl by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -27,7 +26,8 @@ fun EditInspirations(
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text("Title") }
+            label = { Text("Title") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -56,16 +56,26 @@ fun EditInspirations(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            onSave(title, notes, imageUrl, videoUrl)
-        }) {
-            Text("Save Changes")
-        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = onCancel,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Cancel")
+            }
 
-        Button(onClick = onCancel) {
-            Text("Cancel")
+            Button(
+                onClick = {
+                    onSave(title, notes, imageUrl, videoUrl)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Save")
+            }
         }
     }
 }

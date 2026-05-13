@@ -1,4 +1,4 @@
-package dk.itu.creativestudio
+package dk.itu.creativestudio.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

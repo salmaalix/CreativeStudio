@@ -1,6 +1,7 @@
-package dk.itu.creativestudio
+package dk.itu.creativestudio.data.local
 
 import androidx.room.*
+import dk.itu.creativestudio.data.model.Inspiration
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -1,4 +1,4 @@
-package dk.itu.creativestudio
+package dk.itu.creativestudio.ui.features.inspirationlist
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,10 +17,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
+import dk.itu.creativestudio.data.model.Inspiration
+import dk.itu.creativestudio.R
 
 @Composable
 fun InspirationListScreen(
-    viewModel: InspirationViewModel,
+    viewModel: InspirationListViewModel,
     onAddClick: () -> Unit,
     onItemClick: (Inspiration) -> Unit
 ) {

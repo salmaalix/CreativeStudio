@@ -1,4 +1,4 @@
-package dk.itu.creativestudio
+package dk.itu.creativestudio.ui.features.detail
 
 import android.content.Intent
 import android.net.Uri
@@ -12,6 +12,8 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import coil.compose.AsyncImage
 import androidx.compose.ui.text.style.TextAlign
+import dk.itu.creativestudio.data.model.Inspiration
+import dk.itu.creativestudio.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
