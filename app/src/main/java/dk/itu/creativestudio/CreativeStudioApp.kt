@@ -4,6 +4,9 @@ import android.app.Application
 import androidx.room.Room
 import dk.itu.creativestudio.data.local.AppDatabase
 import dk.itu.creativestudio.data.repository.InspirationRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CreativeStudioApp : Application() {
 
@@ -16,8 +19,13 @@ class CreativeStudioApp : Application() {
     }
 
     val repository: InspirationRepository by lazy {
-        InspirationRepository(
-            database.inspirationDao()
-        )
+        InspirationRepository(database.inspirationDao())
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.seedIfEmpty()
+        }
     }
 }

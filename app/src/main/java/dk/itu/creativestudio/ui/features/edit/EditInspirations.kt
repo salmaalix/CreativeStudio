@@ -2,29 +2,22 @@ package dk.itu.creativestudio.ui.features.edit
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import dk.itu.creativestudio.data.model.Inspiration
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun EditInspirations(
-    inspiration: Inspiration,
+    viewModel: EditInspirationViewModel,
     onCancel: () -> Unit,
-    onSaved: () -> Unit,
-    viewModel: EditInspirationViewModel = viewModel()
+    onSaved: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(inspiration.id) {
-        viewModel.setInspiration(inspiration)
+    LaunchedEffect(uiState.isSaved) {
+        if (uiState.isSaved) onSaved()
     }
 
     Column(
@@ -32,7 +25,6 @@ fun EditInspirations(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
         OutlinedTextField(
             value = uiState.title,
             onValueChange = viewModel::onTitleChange,
@@ -70,21 +62,18 @@ fun EditInspirations(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {
-                MainScope().launch {
-
-                    viewModel.onSaveClick(inspiration.id)
-
-                    onSaved()
-                }
-            }
+            onClick = viewModel::onSaveClick,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Save Changes")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Button(onClick = onCancel) {
+        Button(
+            onClick = onCancel,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Cancel")
         }
     }

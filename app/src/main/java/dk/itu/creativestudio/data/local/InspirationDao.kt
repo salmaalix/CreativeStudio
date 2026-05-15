@@ -10,6 +10,9 @@ interface InspirationDao {
     @Query("SELECT * FROM Inspiration")
     fun getAll(): Flow<List<Inspiration>>
 
+    @Query("SELECT * FROM Inspiration WHERE id = :id")
+    suspend fun getById(id: Int): Inspiration?
+
     @Query("SELECT COUNT(*) FROM Inspiration")
     suspend fun getCount(): Int
 

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -12,24 +12,39 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import coil.compose.AsyncImage
 import androidx.compose.ui.text.style.TextAlign
-import dk.itu.creativestudio.data.model.Inspiration
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.itu.creativestudio.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
-    inspiration: Inspiration,
+    viewModel: DetailViewModel,
     onBack: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: (Inspiration) -> Unit
+    onNavigateToList: () -> Unit
 ) {
-
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val shrikhandFont = FontFamily(Font(R.font.shrikhand_regular))
 
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is DetailViewModel.NavigationEvent.OpenUrl -> {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.url))
+                    context.startActivity(intent)
+                }
+            }
+        }
+    }
 
-    val shrikhandFont = FontFamily(
-        Font(R.font.shrikhand_regular)
-    )
+    LaunchedEffect(uiState.isDeleted) {
+        if (uiState.isDeleted) onNavigateToList()
+    }
+
+    if (uiState.inspiration == null) return
+
+    val inspiration = uiState.inspiration!!
 
     Scaffold(
         topBar = {
@@ -46,15 +61,12 @@ fun DetailScreen(
             )
         }
     ) { padding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
         ) {
-
-
             AsyncImage(
                 model = inspiration.imageUrl,
                 contentDescription = null,
@@ -65,11 +77,9 @@ fun DetailScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
             Text(text = inspiration.notes)
 
             Spacer(modifier = Modifier.height(16.dp))
-
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,13 +101,7 @@ fun DetailScreen(
 
                 if (inspiration.videoUrl.isNotBlank()) {
                     Button(
-                        onClick = {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse(inspiration.videoUrl)
-                            )
-                            context.startActivity(intent)
-                        },
+                        onClick = viewModel::onVideoClick,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text("Video")
@@ -107,11 +111,8 @@ fun DetailScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-
             Button(
-                onClick = {
-                    onDelete(inspiration)
-                },
+                onClick = viewModel::onDeleteClick,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,

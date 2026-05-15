@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import dk.itu.creativestudio.data.model.Inspiration
 import dk.itu.creativestudio.R
@@ -24,16 +25,16 @@ import dk.itu.creativestudio.R
 fun InspirationListScreen(
     viewModel: InspirationListViewModel,
     onAddClick: () -> Unit,
-    onItemClick: (Inspiration) -> Unit
+    onItemClick: (Int) -> Unit
 ) {
 
-    val inspirationsState = viewModel.inspirations.collectAsState(initial = emptyList())
-    val inspirations = inspirationsState.value
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val inspirations = uiState.inspirations
+
 
     Scaffold(
         containerColor = Color(0xFFF9CE69),
         floatingActionButton = {
-
             Box(
                 modifier = Modifier.size(72.dp),
                 contentAlignment = Alignment.Center
@@ -49,7 +50,6 @@ fun InspirationListScreen(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-
                 Text(
                     text = "+",
                     color = Color.Black,
@@ -59,49 +59,37 @@ fun InspirationListScreen(
             }
         }
     ) { padding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
         ) {
-
-            val shrikhandFont = FontFamily(
-                Font(R.font.shrikhand_regular)
-            )
-
-            val poppinsItalic = FontFamily(
-                Font(R.font.poppins_bolditalic)
-            )
+            val shrikhandFont = FontFamily(Font(R.font.shrikhand_regular))
+            val poppinsItalic = FontFamily(Font(R.font.poppins_bolditalic))
 
             Text(
                 text = "Creative Studio",
                 fontFamily = shrikhandFont,
                 color = Color(0xFF3A2E8C),
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontSize = 36.sp
-                ),
+                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 36.sp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
                 textAlign = TextAlign.Center
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(inspirations) { item: Inspiration ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { onItemClick(item) },
+                        onClick = { onItemClick(item.id) },
                         colors = CardDefaults.cardColors(
                             containerColor = Color(0xFFF9CE69)
                         ),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-
                             AsyncImage(
                                 model = item.imageUrl,
                                 contentDescription = null,
@@ -109,9 +97,7 @@ fun InspirationListScreen(
                                     .fillMaxWidth()
                                     .height(150.dp)
                             )
-
                             Spacer(modifier = Modifier.height(8.dp))
-
                             Text(
                                 text = item.title,
                                 fontFamily = poppinsItalic,

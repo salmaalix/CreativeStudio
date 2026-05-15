@@ -2,28 +2,23 @@ package dk.itu.creativestudio.ui.features.addinspiration
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.viewmodel.compose.viewModel
-
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun AddInspirationScreen(
-    onCancel: () -> Unit,
-    viewModel: AddInspirationViewModel = viewModel()
+    viewModel: AddInspirationViewModel,
+    onCancel: () -> Unit
 ) {
-
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
         OutlinedTextField(
             value = uiState.title,
             onValueChange = viewModel::onTitleChange,
@@ -64,7 +59,6 @@ fun AddInspirationScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             Button(
                 onClick = onCancel,
                 modifier = Modifier.weight(1f)
