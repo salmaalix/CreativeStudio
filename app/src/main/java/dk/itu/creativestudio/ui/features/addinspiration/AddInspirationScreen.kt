@@ -2,20 +2,21 @@ package dk.itu.creativestudio.ui.features.addinspiration
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 @Composable
 fun AddInspirationScreen(
-    onSave: (String, String, String, String) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    viewModel: AddInspirationViewModel = viewModel()
 ) {
 
-    var title by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
-    var imageUrl by remember { mutableStateOf("") }
-    var videoUrl by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -24,8 +25,8 @@ fun AddInspirationScreen(
     ) {
 
         OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
+            value = uiState.title,
+            onValueChange = viewModel::onTitleChange,
             label = { Text("Title") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -33,25 +34,28 @@ fun AddInspirationScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = notes,
-            onValueChange = { notes = it },
-            label = { Text("Notes") }
+            value = uiState.notes,
+            onValueChange = viewModel::onNotesChange,
+            label = { Text("Notes") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = imageUrl,
-            onValueChange = { imageUrl = it },
-            label = { Text("Image URL") }
+            value = uiState.imageUrl,
+            onValueChange = viewModel::onImageUrlChange,
+            label = { Text("Image URL") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = videoUrl,
-            onValueChange = { videoUrl = it },
-            label = { Text("Video URL") }
+            value = uiState.videoUrl,
+            onValueChange = viewModel::onVideoUrlChange,
+            label = { Text("Video URL") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -70,7 +74,8 @@ fun AddInspirationScreen(
 
             Button(
                 onClick = {
-                    onSave(title, notes, imageUrl, videoUrl)
+                    viewModel.onSaveClick()
+                    onCancel()
                 },
                 modifier = Modifier.weight(1f)
             ) {

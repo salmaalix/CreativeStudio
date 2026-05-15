@@ -8,11 +8,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dk.itu.creativestudio.ui.features.addinspiration.AddInspirationScreen
-import dk.itu.creativestudio.ui.features.addinspiration.AddInspirationViewModel
 import dk.itu.creativestudio.ui.features.detail.DetailScreen
 import dk.itu.creativestudio.ui.features.detail.DetailViewModel
 import dk.itu.creativestudio.ui.features.edit.EditInspirations
-import dk.itu.creativestudio.ui.features.edit.EditInspirationViewModel
 import dk.itu.creativestudio.ui.features.inspirationlist.InspirationListScreen
 import dk.itu.creativestudio.ui.features.inspirationlist.InspirationListViewModel
 import dk.itu.creativestudio.ui.theme.CreativeStudioTheme
@@ -27,8 +25,6 @@ class MainActivity : ComponentActivity() {
             CreativeStudioTheme {
 
                 val listViewModel: InspirationListViewModel = viewModel()
-                val addViewModel: AddInspirationViewModel = viewModel()
-                val editViewModel: EditInspirationViewModel = viewModel()
                 val detailViewModel: DetailViewModel = viewModel()
 
                 val navController = rememberNavController()
@@ -54,17 +50,6 @@ class MainActivity : ComponentActivity() {
                     composable("add") {
 
                         AddInspirationScreen(
-                            onSave = { title, notes, imageUrl, videoUrl ->
-
-                                addViewModel.addInspiration(
-                                    title,
-                                    notes,
-                                    imageUrl,
-                                    videoUrl
-                                )
-
-                                navController.popBackStack("list", false)
-                            },
                             onCancel = {
                                 navController.popBackStack()
                             }
@@ -77,7 +62,7 @@ class MainActivity : ComponentActivity() {
                             ?.getString("id")
                             ?.toIntOrNull()
 
-                        val item = listViewModel
+                        val item = listViewModel //cannot get directly from viewmodel - so needs to change setcontent
                             .inspirations
                             .value
                             .find { it.id == id }
@@ -121,22 +106,12 @@ class MainActivity : ComponentActivity() {
                             EditInspirations(
                                 inspiration = item,
 
-                                onSave = { title, notes, imageUrl, videoUrl ->
-
-                                    editViewModel.updateInspiration(
-                                        item.copy(
-                                            title = title,
-                                            notes = notes,
-                                            imageUrl = imageUrl,
-                                            videoUrl = videoUrl
-                                        )
-                                    )
-
-                                    navController.popBackStack("list", false)
-                                },
-
                                 onCancel = {
                                     navController.popBackStack()
+                                },
+
+                                onSaved = {
+                                    navController.popBackStack("list", false)
                                 }
                             )
                         }

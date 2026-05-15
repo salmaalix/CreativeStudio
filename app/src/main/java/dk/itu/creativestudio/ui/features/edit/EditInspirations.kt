@@ -2,22 +2,30 @@ package dk.itu.creativestudio.ui.features.edit
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dk.itu.creativestudio.data.model.Inspiration
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditInspirations(
     inspiration: Inspiration,
-    onSave: (String, String, String, String) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    onSaved: () -> Unit,
+    viewModel: EditInspirationViewModel = viewModel()
 ) {
 
-    var title by remember { mutableStateOf(inspiration.title) }
-    var notes by remember { mutableStateOf(inspiration.notes) }
-    var imageUrl by remember { mutableStateOf(inspiration.imageUrl) }
-    var videoUrl by remember { mutableStateOf(inspiration.videoUrl) }
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(inspiration.id) {
+        viewModel.setInspiration(inspiration)
+    }
 
     Column(
         modifier = Modifier
@@ -26,8 +34,8 @@ fun EditInspirations(
     ) {
 
         OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
+            value = uiState.title,
+            onValueChange = viewModel::onTitleChange,
             label = { Text("Title") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -35,32 +43,42 @@ fun EditInspirations(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = notes,
-            onValueChange = { notes = it },
-            label = { Text("Notes") }
+            value = uiState.notes,
+            onValueChange = viewModel::onNotesChange,
+            label = { Text("Notes") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = imageUrl,
-            onValueChange = { imageUrl = it },
-            label = { Text("Image URL") }
+            value = uiState.imageUrl,
+            onValueChange = viewModel::onImageUrlChange,
+            label = { Text("Image URL") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = videoUrl,
-            onValueChange = { videoUrl = it },
-            label = { Text("Video URL") }
+            value = uiState.videoUrl,
+            onValueChange = viewModel::onVideoUrlChange,
+            label = { Text("Video URL") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            onSave(title, notes, imageUrl, videoUrl)
-        }) {
+        Button(
+            onClick = {
+                MainScope().launch {
+
+                    viewModel.onSaveClick(inspiration.id)
+
+                    onSaved()
+                }
+            }
+        ) {
             Text("Save Changes")
         }
 
